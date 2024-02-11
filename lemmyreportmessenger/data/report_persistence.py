@@ -4,6 +4,7 @@ from lemmyreportmessenger.data import ContentType
 
 class ReportPersistence:
 
+    # noinspection PyMethodMayBeStatic
     def acknowledge_report(self, report_id: int, report_type: ContentType, community_id: int):
         with session_scope() as session:
             session.add(
@@ -14,6 +15,7 @@ class ReportPersistence:
                 )
             )
 
+    # noinspection PyMethodMayBeStatic
     def has_been_acknowledged(self, report_id: int, report_type: ContentType) -> bool:
         with session_scope() as session:
             report = (session.execute(Report)

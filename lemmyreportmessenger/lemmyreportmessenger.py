@@ -1,3 +1,4 @@
+import asyncio
 import traceback
 from time import sleep
 from typing import List
@@ -36,4 +37,4 @@ class LemmyReportMessenger:
             if acknowledged:
                 continue
 
-            self.matrix_facade.send_report_message(report.content_id, report.content_type, report.reason)
+            asyncio.run(self.matrix_facade.send_report_message(report.content_id, report.content_type, report.reason))

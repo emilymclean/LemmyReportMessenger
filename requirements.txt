@@ -23,6 +23,7 @@ python-socks[asyncio]==2.4.4
 referencing==0.33.0 ; python_version >= '3.8'
 requests==2.31.0 ; python_version >= '3.7'
 rpds-py==0.17.1 ; python_version >= '3.8'
+sqlalchemy==2.0.25
 typing-extensions==4.9.0 ; python_version >= '3.8'
 unpaddedbase64==2.1.0 ; python_version >= '3.6' and python_version < '4.0'
 urllib3==2.2.0 ; python_version >= '3.8'
