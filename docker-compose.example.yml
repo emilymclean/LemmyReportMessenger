@@ -1,0 +1,19 @@
+version: '2'
+
+services:
+  lemmy-bot:
+    image: ghcr.io/benmmclean/lemmyreportmessenger:latest
+    container_name: lemmy-report
+    environment:
+      - LEMMY_USERNAME=
+      - LEMMY_PASSWORD=
+      - LEMMY_INSTANCE=
+      - LEMMY_COMMUNITIES=
+      - MATRIX_INSTANCE=
+      - MATRIX_USERNAME=
+      - MATRIX_PASSWORD=
+      - MATRIX_ROOM=
+    volumes:
+      - lemmy-report-data:/app/data
+volumes:
+  lemmy-report-data:
