@@ -34,3 +34,6 @@ class Report(Base):
     report_id = Column(INTEGER, primary_key=True)
     report_type = Column(sqlalchemy.Enum(ContentType), primary_key=True)
     community_id = Column(INTEGER)
+
+
+Base.metadata.create_all(engine)

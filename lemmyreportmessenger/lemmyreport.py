@@ -32,7 +32,7 @@ class LemmyReportMessenger:
         self.matrix_facade = matrix_facade
 
     @staticmethod
-    def create(
+    async def create(
             community_names: List[str],
             lemmy_instance: str,
             lemmy_username: str,
@@ -49,43 +49,46 @@ class LemmyReportMessenger:
             lemmy_http.get_community(name=c)
         ).community_view.community.id for c in community_names]
 
-        client = AsyncClient(matrix_instance, matrix_username)
+        matrix = MatrixFacade(
+            AsyncClient(matrix_instance, user=matrix_username),
+            matrix_room,
+            lemmy_instance
+        )
+        await matrix.setup(matrix_password)
+
         return LemmyReportMessenger(
             community_ids,
             ReportPersistence(),
             LemmyFacade(
                 lemmy_http
             ),
-            MatrixFacade(
-                client,
-                matrix_room,
-                matrix_password,
-                lemmy_instance
-            )
+            matrix
         )
 
-    def run(self):
+    async def run(self):
         while True:
             # noinspection PyBroadException
             try:
-                self.scan()
+                await self.scan()
             except Exception:
                 print(traceback.format_exc())
                 self.reconnection_manager.wait()
 
-            sleep(60)
+            await asyncio.sleep(60)
 
-    def scan(self):
+    async def scan(self):
         for community_id in self.community_ids:
             print(f"Scanning community (id = {community_id})")
-            self._process_reports(self.lemmy_facade.get_post_reports(community_id))
-            self._process_reports(self.lemmy_facade.get_comment_reports(community_id))
+            await self._process_reports(self.lemmy_facade.get_post_reports(community_id), community_id)
+            await self._process_reports(self.lemmy_facade.get_comment_reports(community_id), community_id)
 
-    def _process_reports(self, reports: List[Report]):
+    async def _process_reports(self, reports: List[Report], community_id: int):
         for report in reports:
             acknowledged = (
                 self.report_persistence.has_been_acknowledged(report.report_id, report.content_type))
             if acknowledged:
                 continue
 
-            asyncio.run(self.matrix_facade.send_report_message(report.content_id, report.content_type, report.reason))
+            await self.matrix_facade.send_report_message(report)
+
+            self.report_persistence.acknowledge_report(report.report_id, report.content_type, community_id)

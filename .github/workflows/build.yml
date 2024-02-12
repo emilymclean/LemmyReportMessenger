@@ -126,7 +126,7 @@ jobs:
         uses: jacobtomlinson/gha-find-replace@v3
         with:
           find: "plemmy = \"*\""
-          replace: "plemmy = \"0.3.11\""
+          replace: "plemmy = \"==0.3.11\""
           regex: false
       - name: Set up Python
         uses: actions/setup-python@v4

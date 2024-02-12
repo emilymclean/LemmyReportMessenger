@@ -4,7 +4,7 @@ from typing import List
 from plemmy import LemmyHttp
 from plemmy.responses import ListPostReportsResponse, ListCommentReportsResponse
 
-from lemmyreportmessenger.data import ContentType
+from lemmyreportmessenger.data import ContentType, content_type
 
 
 @dataclass
@@ -13,6 +13,9 @@ class Report:
     content_id: int
     content_type: ContentType
     reason: str
+
+    def get_url(self, instance: str) -> str:
+        return f"{instance}/{'post' if self.content_type == ContentType.POST else 'comment'}/{self.content_id}"
 
 
 class LemmyFacade:

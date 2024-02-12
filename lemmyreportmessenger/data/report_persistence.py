@@ -1,3 +1,5 @@
+from sqlalchemy import select
+
 from .base import session_scope, Report
 from .content_type import ContentType
 
@@ -18,8 +20,8 @@ class ReportPersistence:
     # noinspection PyMethodMayBeStatic
     def has_been_acknowledged(self, report_id: int, report_type: ContentType) -> bool:
         with session_scope() as session:
-            report = (session.execute(Report)
-                      .filter(Report.report_id == report_id and Report.report_type == report_type)) \
-                .scalar_one_or_none()
+            report = (session.execute(select(Report).filter(
+                Report.report_id == report_id and Report.report_type == report_type)
+            )).scalar_one_or_none()
 
             return report is not None

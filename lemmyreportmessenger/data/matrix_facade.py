@@ -3,6 +3,7 @@ import asyncio
 from nio import AsyncClient
 
 from lemmyreportmessenger.data import ContentType
+from .lemmy_facade import Report
 
 
 class MatrixFacade:
@@ -10,22 +11,21 @@ class MatrixFacade:
     room_id: str
     lemmy_instance: str
 
-    def __init__(self, client: AsyncClient, password: str, room_id: str, instance_url: str):
+    def __init__(self, client: AsyncClient, room_id: str, instance_url: str):
         self.client = client
         self.room_id = room_id
         self.lemmy_instance = instance_url
-        asyncio.run(self._setup(password))
 
-    async def _setup(self, password: str):
+    async def setup(self, password: str):
         print(await self.client.login(password=password, device_name="lemmy-report-bot"))
 
         if self.room_id in (await self.client.joined_rooms()).rooms:
             return
         await self.client.join(self.room_id)
 
-    async def send_report_message(self, content_id: int, content_type: ContentType, reason: str):
-        print("Sending report to matrix!")
-        url = f"{self.lemmy_instance}/{'post' if content_type == ContentType.POST else 'comment'}/{content_id}"
+    async def send_report_message(self, report: Report):
+        url = report.get_url(self.lemmy_instance)
+        print(f"Sending report on {url} for reason: {report.reason}")
 
         await self.client.room_send(
             room_id=self.room_id,
@@ -33,7 +33,7 @@ class MatrixFacade:
             content={
                 "msgtype": "m.notice",
                 "format": "org.matrix.custom.html",
-                "body": f"The post at {url} has been reported for {reason}",
-                "formatted_body": f"The post at <a href='{url}'>{url}</a> has been reported for <i>{reason}</i>"
+                "body": f"The post at {url} has been reported for {report.reason}",
+                "formatted_body": f"The post at <a href='{url}'>{url}</a> has been reported for <i>{report.reason}</i>"
             }
         )
