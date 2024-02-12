@@ -1,6 +1,5 @@
 import asyncio
 import traceback
-from time import sleep
 from typing import List
 
 from nio import AsyncClient
@@ -84,6 +83,8 @@ class LemmyReportMessenger:
 
     async def _process_reports(self, reports: List[Report], community_id: int):
         for report in reports:
+            if report.resolved:
+                continue
             acknowledged = (
                 self.report_persistence.has_been_acknowledged(report.report_id, report.content_type))
             if acknowledged:

@@ -13,6 +13,7 @@ class Report:
     content_id: int
     content_type: ContentType
     reason: str
+    resolved: bool
 
     def get_url(self, instance: str) -> str:
         return f"{instance}/{'post' if self.content_type == ContentType.POST else 'comment'}/{self.content_id}"
@@ -30,7 +31,8 @@ class LemmyFacade:
             report_id=r.post_report.id,
             content_id=r.post.id,
             content_type=ContentType.POST,
-            reason=r.post_report.reason
+            reason=r.post_report.reason,
+            resolved=r.post_report.resolved
         ) for r in reports]
 
     def get_comment_reports(self, community_id: int) -> List[Report]:
@@ -39,5 +41,6 @@ class LemmyFacade:
             report_id=r.comment_report.id,
             content_id=r.comment.id,
             content_type=ContentType.COMMENT,
-            reason=r.comment_report.reason
+            reason=r.comment_report.reason,
+            resolved=r.comment_report.resolved
         ) for r in reports]
