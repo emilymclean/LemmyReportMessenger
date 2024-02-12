@@ -33,7 +33,9 @@ class MatrixFacade:
             content={
                 "msgtype": "m.notice",
                 "format": "org.matrix.custom.html",
-                "body": f"The post in /c/{community_name} at {url} has been reported for {report.reason}",
-                "formatted_body": f"The post in /c/{community_name} at <a href='{url}'>{url}</a> has been reported for <i>{report.reason}</i>"
+                "body": f"The post in /c/{community_name} at {url} has been reported by "
+                        f"{report.actor_display_name} for {report.reason}",
+                "formatted_body": f"The post in /c/{community_name} at <a href='{url}'>{url}</a> has been reported by "
+                                  f"<a href='{report.actor_id}'>{report.actor_display_name}</a> for <i>{report.reason}</i>"
             }
         )
