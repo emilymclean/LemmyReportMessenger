@@ -42,7 +42,6 @@ class LemmyFacade:
 
     def get_comment_reports(self, community_id: int) -> List[Report]:
         reports = ListCommentReportsResponse(self.lemmy.list_comment_reports(community_id)).comment_reports
-        reports[0].creator.id
 
         return [Report(
             report_id=r.comment_report.id,
