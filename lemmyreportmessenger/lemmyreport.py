@@ -49,9 +49,7 @@ class LemmyReportMessenger:
             lemmy_http.get_community(name=c)
         ).community_view.community.id for c in community_names]
 
-        client = AsyncClient(matrix_instance)
-        client.login(matrix_username, matrix_password)
-
+        client = AsyncClient(matrix_instance, matrix_username)
         return LemmyReportMessenger(
             community_ids,
             ReportPersistence(),
@@ -61,6 +59,7 @@ class LemmyReportMessenger:
             MatrixFacade(
                 client,
                 matrix_room,
+                matrix_password,
                 lemmy_instance
             )
         )
@@ -78,6 +77,7 @@ class LemmyReportMessenger:
 
     def scan(self):
         for community_id in self.community_ids:
+            print(f"Scanning community (id = {community_id})")
             self._process_reports(self.lemmy_facade.get_post_reports(community_id))
             self._process_reports(self.lemmy_facade.get_comment_reports(community_id))
 
