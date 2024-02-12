@@ -1,8 +1,8 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Dict
 
 from plemmy import LemmyHttp
-from plemmy.responses import ListPostReportsResponse, ListCommentReportsResponse
+from plemmy.responses import ListPostReportsResponse, ListCommentReportsResponse, GetCommunityResponse
 
 from lemmyreportmessenger.data import ContentType, content_type
 
@@ -21,6 +21,7 @@ class Report:
 
 class LemmyFacade:
     lemmy: LemmyHttp
+    cached_community_id: Dict[str, int] = {}
 
     def __init__(self, lemmy: LemmyHttp):
         self.lemmy = lemmy
@@ -44,3 +45,11 @@ class LemmyFacade:
             reason=r.comment_report.reason,
             resolved=r.comment_report.resolved
         ) for r in reports]
+
+    def get_community_id(self, community_name: str) -> int:
+        if community_name in self.cached_community_id:
+            return self.cached_community_id[community_name]
+
+        community_id = GetCommunityResponse(self.lemmy.get_community(name=community_name)).community_view.community.id
+        self.cached_community_id[community_name] = community_id
+        return community_id

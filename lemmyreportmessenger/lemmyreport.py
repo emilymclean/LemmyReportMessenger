@@ -12,7 +12,7 @@ from .reconnection_manager import ReconnectionDelayManager
 
 
 class LemmyReportMessenger:
-    community_ids: List[int]
+    community_names: List[str]
     reconnection_manager: ReconnectionDelayManager = ReconnectionDelayManager()
     report_persistence: ReportPersistence
     lemmy_facade: LemmyFacade
@@ -20,12 +20,12 @@ class LemmyReportMessenger:
 
     def __init__(
             self,
-            community_ids: List[int],
+            community_names: List[str],
             report_persistence: ReportPersistence,
             lemmy_facade: LemmyFacade,
             matrix_facade: MatrixFacade
     ):
-        self.community_ids = community_ids
+        self.community_names = community_names
         self.report_persistence = report_persistence
         self.lemmy_facade = lemmy_facade
         self.matrix_facade = matrix_facade
@@ -44,10 +44,6 @@ class LemmyReportMessenger:
         lemmy_http = LemmyHttp(lemmy_instance)
         lemmy_http.login(lemmy_username, lemmy_password)
 
-        community_ids = [GetCommunityResponse(
-            lemmy_http.get_community(name=c)
-        ).community_view.community.id for c in community_names]
-
         matrix = MatrixFacade(
             AsyncClient(matrix_instance, user=matrix_username),
             matrix_room,
@@ -56,7 +52,7 @@ class LemmyReportMessenger:
         await matrix.setup(matrix_password)
 
         return LemmyReportMessenger(
-            community_ids,
+            community_names,
             ReportPersistence(),
             LemmyFacade(
                 lemmy_http
@@ -73,15 +69,17 @@ class LemmyReportMessenger:
                 print(traceback.format_exc())
                 self.reconnection_manager.wait()
 
+            print("Sleeping for 60 seconds")
             await asyncio.sleep(60)
 
     async def scan(self):
-        for community_id in self.community_ids:
-            print(f"Scanning community (id = {community_id})")
-            await self._process_reports(self.lemmy_facade.get_post_reports(community_id), community_id)
-            await self._process_reports(self.lemmy_facade.get_comment_reports(community_id), community_id)
+        for community_name in self.community_names:
+            print(f"Scanning community {community_name}")
+            community_id = self.lemmy_facade.get_community_id(community_name)
+            await self._process_reports(self.lemmy_facade.get_post_reports(community_id), community_id, community_name)
+            await self._process_reports(self.lemmy_facade.get_comment_reports(community_id), community_id, community_name)
 
-    async def _process_reports(self, reports: List[Report], community_id: int):
+    async def _process_reports(self, reports: List[Report], community_id: int, community_name: str):
         for report in reports:
             if report.resolved:
                 continue
@@ -90,6 +88,6 @@ class LemmyReportMessenger:
             if acknowledged:
                 continue
 
-            await self.matrix_facade.send_report_message(report)
+            await self.matrix_facade.send_report_message(report, community_name)
 
             self.report_persistence.acknowledge_report(report.report_id, report.content_type, community_id)

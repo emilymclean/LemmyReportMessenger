@@ -23,7 +23,7 @@ class MatrixFacade:
             return
         await self.client.join(self.room_id)
 
-    async def send_report_message(self, report: Report):
+    async def send_report_message(self, report: Report, community_name: str):
         url = report.get_url(self.lemmy_instance)
         print(f"Sending report on {url} for reason: {report.reason}")
 
@@ -33,7 +33,7 @@ class MatrixFacade:
             content={
                 "msgtype": "m.notice",
                 "format": "org.matrix.custom.html",
-                "body": f"The post at {url} has been reported for {report.reason}",
-                "formatted_body": f"The post at <a href='{url}'>{url}</a> has been reported for <i>{report.reason}</i>"
+                "body": f"The post in /c/{community_name} at {url} has been reported for {report.reason}",
+                "formatted_body": f"The post in /c/{community_name} at <a href='{url}'>{url}</a> has been reported for <i>{report.reason}</i>"
             }
         )
