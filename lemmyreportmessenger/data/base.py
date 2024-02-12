@@ -5,7 +5,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine, Engine, Column, INTEGER
 from sqlalchemy.orm import sessionmaker, Session
 
-from lemmyreportmessenger.data import ContentType
+from .content_type import ContentType
 
 Base = declarative_base()
 metadata = Base.metadata

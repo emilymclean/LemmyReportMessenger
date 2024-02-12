@@ -1,2 +1,2 @@
-from lemmyreport import LemmyReportMessenger
-from lemmyreportmessenger.data import *
+from .lemmyreport import LemmyReportMessenger
+from .data import *

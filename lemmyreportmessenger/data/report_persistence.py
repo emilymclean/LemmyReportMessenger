@@ -1,5 +1,5 @@
-from lemmyreportmessenger.data.base import session_scope, Report
-from lemmyreportmessenger.data import ContentType
+from .base import session_scope, Report
+from .content_type import ContentType
 
 
 class ReportPersistence:

@@ -7,9 +7,9 @@ from nio import AsyncClient
 from plemmy import LemmyHttp
 from plemmy.responses import GetCommunityResponse
 
-from lemmyreportmessenger.data import ReportPersistence, LemmyFacade, Report
-from lemmyreportmessenger.data.matrix_facade import MatrixFacade
-from lemmyreportmessenger.reconnection_manager import ReconnectionDelayManager
+from .data import ReportPersistence, LemmyFacade, Report
+from .data.matrix_facade import MatrixFacade
+from .reconnection_manager import ReconnectionDelayManager
 
 
 class LemmyReportMessenger:
