@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import List, Dict
 
-from plemmy import LemmyHttp
-from plemmy.responses import ListPostReportsResponse, ListCommentReportsResponse, GetCommunityResponse
+from pythonlemmy import LemmyHttp
+from pythonlemmy.responses import ListPostReportsResponse, ListCommentReportsResponse, GetCommunityResponse
 
 from lemmyreportmessenger.data import ContentType, content_type
 

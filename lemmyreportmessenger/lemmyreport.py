@@ -3,7 +3,7 @@ import traceback
 from typing import List
 
 from nio import AsyncClient
-from plemmy import LemmyHttp
+from pythonlemmy import LemmyHttp
 
 from .data import ReportPersistence, LemmyFacade, Report
 from .data.matrix_facade import MatrixFacade
