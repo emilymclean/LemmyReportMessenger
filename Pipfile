@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-pythonlemmy = "==0.1.2"
+pythonlemmy = "==0.3.0"
 matrix-nio = "*"
 sqlalchemy = "*"
 
