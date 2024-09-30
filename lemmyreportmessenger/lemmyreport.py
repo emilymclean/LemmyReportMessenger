@@ -59,6 +59,35 @@ class LemmyReportMessenger:
             matrix
         )
 
+    @staticmethod
+    async def create_jwt(
+            community_names: List[str],
+            lemmy_instance: str,
+            lemmy_jwt: str,
+            matrix_instance: str,
+            matrix_username: str,
+            matrix_password: str,
+            matrix_room: str
+    ):
+        lemmy_http = LemmyHttp(lemmy_instance)
+        lemmy_http.set_jwt(lemmy_jwt)
+
+        matrix = MatrixFacade(
+            AsyncClient(matrix_instance, user=matrix_username),
+            matrix_room,
+            lemmy_instance
+        )
+        await matrix.setup(matrix_password)
+
+        return LemmyReportMessenger(
+            community_names,
+            ReportPersistence(),
+            LemmyFacade(
+                lemmy_http
+            ),
+            matrix
+        )
+
     async def run(self):
         while True:
             # noinspection PyBroadException
